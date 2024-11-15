@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.kanangupta.yummyrestaurant.dto.LoginRequest;
 
+import java.util.Map;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/customer")
@@ -60,6 +62,7 @@ public class CustomerController {
         customerService.deleteCustomer(email);
         return ResponseEntity.ok("Customer account deleted successfully");
     }
+
 
 }
 

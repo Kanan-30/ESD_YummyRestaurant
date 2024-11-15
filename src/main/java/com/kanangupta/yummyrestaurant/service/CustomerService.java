@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.Map;
 import java.util.Optional;
 import com.kanangupta.yummyrestaurant.dto.LoginRequest;
 
@@ -59,13 +61,41 @@ public class CustomerService {
         return customerMapper.toCustomerResponse(customer);
     }
 
+//    public void updateCustomer(String email, CustomerRequest request) {
+//        Customer customer = customerRepo.findByEmail(email)
+//                .orElseThrow(() -> new RuntimeException("Customer not found"));
+//        customer.setFirstName(request.firstName());
+//        customer.setLastName(request.lastName());
+//        customerRepo.save(customer);
+//    }
+
     public void updateCustomer(String email, CustomerRequest request) {
         Customer customer = customerRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Customer not found"));
-        customer.setFirstName(request.firstName());
-        customer.setLastName(request.lastName());
+
+        // Update fields only if they are not null
+        if (request.firstName() != null) {
+            customer.setFirstName(request.firstName());
+        }
+        if (request.lastName() != null) {
+            customer.setLastName(request.lastName());
+        }
+        if (request.address() != null) {
+            customer.setAddress(request.address());
+        }
+        if (request.city() != null) {
+            customer.setCity(request.city());
+        }
+        if (request.pincode() != null) {
+            customer.setPincode(request.pincode());
+        }
+
         customerRepo.save(customer);
     }
+
+
+
+
 
     public void deleteCustomer(String email) {
         Customer customer = customerRepo.findByEmail(email)
