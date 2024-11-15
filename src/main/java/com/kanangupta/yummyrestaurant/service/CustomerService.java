@@ -53,16 +53,36 @@ public class CustomerService {
         throw new RuntimeException("Invalid credentials");
     }
 
-    public void deleteCustomer(Long customerId) {
-        customerRepo.deleteById(customerId);
+    public CustomerResponse getCustomerDetails(String email) {
+        Customer customer = customerRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+        return customerMapper.toCustomerResponse(customer);
     }
 
-    public String updateCustomer(Long customerId, CustomerRequest request) {
-        Customer customer = customerRepo.findById(customerId).orElseThrow(() -> new RuntimeException("Customer not found"));
+    public void updateCustomer(String email, CustomerRequest request) {
+        Customer customer = customerRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
         customer.setFirstName(request.firstName());
         customer.setLastName(request.lastName());
         customerRepo.save(customer);
-        return "Customer updated successfully";
+    }
+
+    public void deleteCustomer(String email) {
+        Customer customer = customerRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+        customerRepo.delete(customer);
+    }
+
+    public String validateAndExtractEmail(String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new RuntimeException("Invalid Authorization header");
+        }
+        String token = authHeader.substring(7);
+
+        if (!jwtUtil.isTokenValid(token)) {
+            throw new RuntimeException("Invalid or expired token");
+        }
+        return jwtUtil.extractEmail(token);
     }
 
 }

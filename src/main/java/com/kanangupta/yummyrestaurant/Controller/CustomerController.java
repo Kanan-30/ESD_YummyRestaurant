@@ -2,15 +2,13 @@ package com.kanangupta.yummyrestaurant.Controller;
 
 
 import com.kanangupta.yummyrestaurant.dto.CustomerRequest;
+import com.kanangupta.yummyrestaurant.dto.CustomerResponse;
 import com.kanangupta.yummyrestaurant.service.CustomerService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.kanangupta.yummyrestaurant.dto.LoginRequest;
 
 @RequiredArgsConstructor
@@ -40,6 +38,29 @@ public class CustomerController {
         String token = customerService.login(request);
         return ResponseEntity.ok(token);
     }
+
+    /*New Functionalities*/
+    @GetMapping
+    public ResponseEntity<CustomerResponse> getCustomerDetails(@RequestHeader("Authorization") String authHeader) {
+        String email = customerService.validateAndExtractEmail(authHeader);
+        return ResponseEntity.ok(customerService.getCustomerDetails(email));
+    }
+
+    @PutMapping
+    public ResponseEntity<String> updateCustomer(@RequestHeader("Authorization") String authHeader,
+                                                 @RequestBody CustomerRequest request) {
+        String email = customerService.validateAndExtractEmail(authHeader);
+        customerService.updateCustomer(email, request);
+        return ResponseEntity.ok("Customer details updated successfully");
+    }
+
+    @DeleteMapping
+    public ResponseEntity<String> deleteCustomer(@RequestHeader("Authorization") String authHeader) {
+        String email = customerService.validateAndExtractEmail(authHeader);
+        customerService.deleteCustomer(email);
+        return ResponseEntity.ok("Customer account deleted successfully");
+    }
+
 }
 
 
